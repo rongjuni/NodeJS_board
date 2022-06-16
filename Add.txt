@@ -1,0 +1,8 @@
+Future Addition
+
+1. Move delete button in detail
+2. Log out
+3. Remove underline (HTML)
+4. Add more menu in Navbar (login, etc)
+5. UI - when delete button is clicked, it disappear even though it's not deleted in DB. When refreshed, it comes back
+6. same ID and Pass can be created.
