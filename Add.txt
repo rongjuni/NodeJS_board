@@ -6,3 +6,5 @@ Future Addition
 4. Add more menu in Navbar (login, etc)
 5. UI - when delete button is clicked, it disappear even though it's not deleted in DB. When refreshed, it comes back
 6. same ID and Pass can be created.
+7. After Search, list is not clickable
+8. Edit is not working

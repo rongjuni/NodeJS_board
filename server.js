@@ -75,13 +75,13 @@ io.on("connection", function (socket) {
   console.log("connected to the socket");
   console.log(socket.id);
 
-  socket.on("room1-send", function (data) {
-    io.to("room1").emit("broadcast", data);
-  });
+  // socket.on("room1-send", function (data) {
+  //   io.to("room1").emit("broadcast", data);
+  // });
 
-  socket.on("joinroom", function (data) {
-    socket.join("room1", "let me enter room1");
-  });
+  // socket.on("joinroom", function (data) {
+  //   socket.join("room1", "let me enter room1");
+  // });
 
   socket.on("user-send", function (data) {
     console.log(data);
@@ -90,14 +90,6 @@ io.on("connection", function (socket) {
   });
 });
 // end socket run
-
-app.get("/pet", (req, res) => {
-  res.send("Showing Pet Supplies");
-});
-
-app.get("/beauty", (req, res) => {
-  res.send("Showing Beauty Supplies");
-});
 
 app.get("/", (req, res) => {
   res.render("index.ejs");
@@ -148,14 +140,14 @@ app.get("/search", (req, res) => {
 
 app.post("/add", (req, res) => {
   res.send("sent completed");
-  console.log(req.body.title);
-  console.log(req.body.date);
+  // console.log(req.body.title);
+  // console.log(req.body.date);
   db.collection("counter").findOne(
     { name: "accumulated total post" },
     (err, result) => {
-      console.log(result.totalPost);
-      console.log("req user ", req.user);
-      console.log("req body ", req.body);
+      // console.log(result.totalPost);
+      // console.log("req user ", req.user);
+      // console.log("req body ", req.body);
       var totalPostings = result.totalPost;
 
       var whatToBeSaved = {
@@ -209,7 +201,6 @@ app.get("/detail/:id", (req, res) => {
     { _id: parseInt(req.params.id) },
     (err, result) => {
       console.log(result);
-
       res.render("detail.ejs", { data: result });
     }
   );
@@ -283,7 +274,7 @@ function loginTrue(req, res, next) {
     //if logged in, req.user is alway there
     next();
   } else {
-    res.send("Please log in first");
+    res.render("noLogin.ejs");
   }
 }
 
@@ -293,10 +284,11 @@ app.post(
     failureRedirect: "/fail",
   }),
   (req, res) => {
-    res.redirect("/");
+    res.redirect("/list");
   }
 );
 
+// login check
 passport.use(
   new LocalStrategy(
     {
@@ -359,12 +351,13 @@ app.post("/register", (req, res) => {
 // instead, below. app.use = middle ware
 
 // app.use("/shop", require("./routes/shop")); // if /shop is deleted, it can be added here
-app.use("/", require("./routes/shop.js"));
-app.use("/board/sub", require("./routes/board.js"));
+// app.use("/", require("./routes/shop.js"));
+// app.use("/board/sub", require("./routes/board.js"));
 
 //chatting - below login freature
 const { ObjectId } = require("mongodb");
 const { render } = require("ejs");
+
 app.post("/chatroom", loginTrue, (req, res) => {
   var saving = {
     title: "random Chatroom",
@@ -382,7 +375,7 @@ app.post("/chatroom", loginTrue, (req, res) => {
     });
 });
 
-app.get("/chatroom", (req, res) => {
+app.get("/chatroom", loginTrue, (req, res) => {
   db.collection("chatroom")
     .find({ member: req.user._id })
     .toArray()

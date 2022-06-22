@@ -3,7 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Socket.IO</title>
+    <title>Livechat</title>
+    <link rel="stylesheet" href="/public/socket.css" />
+
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -15,46 +17,74 @@
   <body>
     <%- include('nav.html') %>
 
-    <div>채팅방</div>
+    <div>
+      <h2 class="chattingPage">Live Chat</h2>
+      <h4>Your message will be deleted once you leave this page</h4>
+    </div>
+
+    <!-- <form id="formSubmit"> -->
+    <div id="chattingWindow" class="chattingPage">
+      <div id="content" class="content"></div>
+    </div>
+
+    <form>
+      <div class="input-group" id="chattingPage">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Type your message"
+          id="input1"
+        />
+        <div class="input-group-append">
+          <button class="input-group-text" id="send" class="sendButton">
+            Send
+          </button>
+        </div>
+      </div>
+    </form>
+
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 
     <!-- socket.io cdn setting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.js"></script>
     <!-- end socket.io cdn setting -->
 
-    <input id="input1" />
-    <div id="content"></div>
-    <button id="send">msg to server</button>
-    <button id="room1">Join Room1</button>
-    <button id="room1-send">Message in Room1</button>
-
     <!-- socket.io open -->
     <script>
       var socket = io();
 
-      $("#room1-send").click(function () {
-        socket.emit("room1-send", "hello room number 1!!");
-      });
+      // $("#room1-send").click(function () {
+      //   socket.emit("room1-send", "hello room number 1!!");
+      // });
 
-      $("#room1").click(function () {
-        socket.emit("joinroom", "joining room1....");
-      });
+      // $("#room1").click(function () {
+      //   socket.emit("joinroom", "joining room1....");
+      // });
 
-      $("#send").click(function () {
+      // function scrollToEnd() {
+      //   var chatList = document.getElementById("content");
+      //   chatList.scrollHeight = chatList.scrollHeight;
+      // }
+
+      $("#send").click(function (e) {
         socket.emit("user-send", $("#input1").val());
+        e.preventDefault();
+        $("#input1").val(" ");
+        // var chatList = document.getElementById("content");
+        // chatList.scrollTop = chatList.scrollHeight;
+        // scrollToEnd();
+        $("#content")
+          .stop()
+          .animate({
+            scrollTop: $("#content")[0].scrollHeight,
+          });
       });
 
       socket.on("broadcast", function (data) {
-        console.log(data);
+        console.log("broadcast data", data);
         $("#content").append("<div>" + data + "</div>");
       });
     </script>
     <!-- end socket.io open -->
-
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
-      crossorigin="anonymous"
-    ></script>
   </body>
 </html>

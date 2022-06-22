@@ -1,0 +1,21 @@
+.chattingPage{
+    width: 50%;
+    text-align: center;
+    margin: auto;
+    margin-top: 2rem;
+}
+
+form{
+    width: 50%;
+    margin: auto;
+    margin-top: 2vh;
+}
+
+
+.content{
+    /* border: 5px black solid; */
+    box-shadow: 0px 0px 5px;
+    height: 40vh;
+    overflow: auto;
+    text-align: left;
+}
