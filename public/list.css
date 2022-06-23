@@ -1,0 +1,27 @@
+
+.linkRemoval{
+    /* text-decoration: none; */
+    color: black;
+}
+
+.linkRemoval:hover{
+    color: darkgray;
+}
+
+
+.input-group-append{
+    margin: 0 0 0 0.5rem ;
+}
+
+
+.listContent{
+    margin: 0;
+}
+
+.delete {
+    margin-top: 0.5rem;
+}
+
+.chat{
+    margin-top: 0.5rem;
+}

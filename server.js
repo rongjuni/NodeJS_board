@@ -104,7 +104,7 @@ app.get("/list", (req, res) => {
   db.collection("post")
     .find()
     .toArray((error, result) => {
-      // console.log(result);
+      console.log("list ", result);
       res.render("list.ejs", { posts: result });
     });
 });
@@ -134,7 +134,9 @@ app.get("/search", (req, res) => {
     // .find({ $text: { $search: req.query.value } })
     .toArray((error, result) => {
       console.log("search result ", result);
-      res.render("search.ejs", { searched: result });
+      if (result == true) {
+        res.render("search.ejs", { searched: result });
+      } else res.render("searchNotFound.ejs");
     });
 });
 
@@ -179,11 +181,12 @@ app.post("/add", (req, res) => {
 });
 
 app.delete("/delete", (req, res) => {
-  console.log(req.body);
+  console.log("req.body._id before ", req.body._id);
   req.body._id = parseInt(req.body._id);
+  console.log("req.body._id after ", req.user._id);
 
   // as add two paramter in object, delete one that satisfies both values
-  let dataToBeDeleted = { _id: req.body._id, writer: req.user._id };
+  let dataToBeDeleted = { _id: req.body._id, userName: req.user.id };
 
   // db.collection("post").deleteOne(req.body, (error, result) => {
   db.collection("post").deleteOne(dataToBeDeleted, (error, result) => {
@@ -232,6 +235,10 @@ app.get("/login", (req, res) => {
   res.render("login.ejs");
 });
 
+app.get("/signup", (req, res) => {
+  res.render("signup.ejs");
+});
+
 // image upload and save
 // npm install multer
 let multer = require("multer");
@@ -265,7 +272,7 @@ app.get("/image/:imagename", (req, res) => {
 
 //My page - login verification
 app.get("/mypage", loginTrue, (req, res) => {
-  console.log(req.user);
+  console.log("req.user ", req.user);
   res.render("mypage.ejs", { userInfo: req.user });
 });
 
@@ -277,16 +284,6 @@ function loginTrue(req, res, next) {
     res.render("noLogin.ejs");
   }
 }
-
-app.post(
-  "/login",
-  passport.authenticate("local", {
-    failureRedirect: "/fail",
-  }),
-  (req, res) => {
-    res.redirect("/list");
-  }
-);
 
 // login check
 passport.use(
@@ -329,15 +326,40 @@ passport.deserializeUser(function (id, done) {
   });
 });
 
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    failureRedirect: "/fail",
+  }),
+  (req, res) => {
+    res.redirect("/list");
+  }
+);
+
 //need above paragraph to make it work properly.
 // add feature to confirm login id is not duplicate or not already registered
 app.post("/register", (req, res) => {
-  db.collection("login").insertOne(
-    { id: req.body.id, pw: req.body.pw },
-    (err, result) => {
-      res.redirect("/");
+  db.collection("login").findOne({ id: req.body.id }, (err, result) => {
+    if (result) {
+      res.redirect("/register/fail");
+      // res.send("already exist");
+    } else {
+      db.collection("login").insertOne(
+        { id: req.body.id, pw: req.body.pw },
+        (err, result) => {
+          res.redirect("/register/success");
+        }
+      );
     }
-  );
+  });
+});
+
+app.get("/register/fail", (req, res) => {
+  res.render("registerFail.ejs");
+});
+
+app.get("/register/success", (req, res) => {
+  res.render("registerSuccess.ejs");
 });
 
 //moved to Routes folder
