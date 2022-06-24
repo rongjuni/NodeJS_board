@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Write</title>
+    <title>Login || Register Success</title>
+    <link rel="stylesheet" href="/public/noLogin.css" />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -15,18 +16,19 @@
   <body>
     <%- include('nav.html') %>
 
-    <!-- BODY INPUT TITLE & DATES -->
+    <div class="modal-body">
+      <h5>Your post has been successfully posted!</h5>
+      <br />
 
-    <div class="mb-3" style="width: 50%">
-      <form action="/add" method="POST">
-        <label for="formGroupExampleInput" class="form-label">Title</label>
-        <input type="text" class="form-control" required name="title" />
-        <div class="mb-3">
-          <label for="formGroupExampleInput2" class="form-label">Content</label>
-          <input type="text" class="form-control" required name="content" />
-        </div>
-        <button type="submit" class="btn btn-danger">Submit</button>
-      </form>
+      <a
+        href="/list"
+        role="button"
+        class="btn btn-secondary popover-test btn-success"
+        title="Popover title"
+        >Back</a
+      >
+
+      <hr />
     </div>
 
     <script

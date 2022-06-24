@@ -68,8 +68,8 @@ MongoClient.connect(
 ); //MongoClient.connect end
 
 // socket run
-app.get("/socket", (req, res) => {
-  res.render("socket.ejs");
+app.get("/socket", loginTrue, (req, res) => {
+  res.render("socket.ejs", { userIdData: req.user.id });
 });
 io.on("connection", function (socket) {
   console.log("connected to the socket");
@@ -84,7 +84,7 @@ io.on("connection", function (socket) {
   // });
 
   socket.on("user-send", function (data) {
-    console.log(data);
+    // console.log(data);
     io.emit("broadcast", data); //socket on in socket.ejs
     // io.to(socket.id).emit("broadcast", data); //socket on in socket.ejs. only chat to socket.id person
   });
@@ -104,7 +104,7 @@ app.get("/list", (req, res) => {
   db.collection("post")
     .find()
     .toArray((error, result) => {
-      console.log("list ", result);
+      // console.log("list ", result);
       res.render("list.ejs", { posts: result });
     });
 });
@@ -140,8 +140,8 @@ app.get("/search", (req, res) => {
     });
 });
 
-app.post("/add", (req, res) => {
-  res.send("sent completed");
+app.post("/add", loginTrue, (req, res) => {
+  res.render("writeAddSuccess.ejs");
   // console.log(req.body.title);
   // console.log(req.body.date);
   db.collection("counter").findOne(
@@ -155,7 +155,7 @@ app.post("/add", (req, res) => {
       var whatToBeSaved = {
         _id: totalPostings + 1,
         title: req.body.title,
-        date: req.body.date,
+        content: req.body.content,
         user: req.user._id,
         userName: req.user.id,
       };
@@ -203,10 +203,21 @@ app.get("/detail/:id", (req, res) => {
   db.collection("post").findOne(
     { _id: parseInt(req.params.id) },
     (err, result) => {
-      console.log(result);
-      res.render("detail.ejs", { data: result });
+      // console.log("detail page ", result);
+
+      db.collection("message")
+        .find({ parent: req.params.id })
+        .toArray((error, result2) => {
+          console.log("message result2", result2);
+          res.render("detail.ejs", { data: result, data2: result2 });
+        });
     }
   );
+  // res.writeHead(200, {
+  //   Connection: "keep-alive",
+  //   "Content-Type": "text/event-stream",
+  //   "Cache-Control": "no-cache",
+  // });
 });
 
 app.get("/edit/:id", (req, res) => {
@@ -452,5 +463,18 @@ app.get("/message/:id", loginTrue, function (req, res) {
     console.log(result.fullDocument);
     res.write("event: test\n");
     res.write("data: " + JSON.stringify([result.fullDocument]) + "\n\n"); //as change happnes in DB, do this
+  });
+});
+
+app.post("/commentpost", (req, res) => {
+  let commentSave = {
+    parent: req.body.parent,
+    content: req.body.comment,
+    userid: req.user._id,
+    date: new Date(),
+  };
+
+  db.collection("message").insertOne(commentSave, (err, result) => {
+    res.redirect("/list");
   });
 });

@@ -92,7 +92,7 @@
 
       socket.on("broadcast", function (data) {
         console.log("broadcast data", data);
-        $("#content").append("<div>" + data + "</div>");
+        $("#content").append("<div> <%= userIdData %> : " + data + "</div>");
       });
     </script>
     <!-- end socket.io open -->

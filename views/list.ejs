@@ -35,7 +35,7 @@
 
     <div class="'container">
       <ul class="list-group">
-        <% for (let i=0; i < posts.length; i++){ %>
+        <% for (let i=posts.length-1; i >= 0; i--){ %>
         <li class="list-group-item">
           <a href="/detail/<%= posts[i]._id %>" class="linkRemoval">
             <p class="listContent">Posting ID : <%= posts[i]._id %></p>
