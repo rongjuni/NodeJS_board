@@ -12,7 +12,7 @@
       integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="/public/main.css" />
+    <link rel="stylesheet" href="/public/detail.css" />
   </head>
   <body>
     <%- include('nav.html') %>
@@ -45,19 +45,25 @@
         </div>
 
         <div>
+          <ul id="repAdd">
           <% for (let i=data2.length-1; i >= 0; i--){ %>
             <li class="list-group-item">
-                <p class="listContent"> <%= data2[i].userid %> : <%= data2[i].content %></p>
+                <p class="listContent reply-section">
+                   <span class="reple-id"><%= data2[i].userName %> </span>
+                   <span><%= data2[i].content %></span>
+                  </p>
             </li>
             <% } %>
-
+          </ul>
         </div>
       </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.js"></script>
 
     <script>
+      var socket = io();
       // $('#container mt-4').click( function(){
       //   clickedContent = this.dataset.id
       // } )
@@ -65,7 +71,7 @@
         let comment = $("#commentInput").val();
         let receiveResultData = "<%= JSON.stringify(data) %>"
         receiveResultData = JSON.parse(receiveResultData.replaceAll('&#34;', '\"'))
-
+        
         let withCommentData = {
           parent: receiveResultData._id,
           title: receiveResultData.title,
@@ -74,12 +80,23 @@
           comment: comment,
         };
         
-        // console.log(withCommentData)
+        
+        socket.emit("commentReply", withCommentData)
         $.post("/commentpost", withCommentData).then(() => {
-        console.log("comment sent!");
+          console.log("comment sent!");
+          $("#commentInput").val(" ")
         });
       });
+
+        socket.on("broadcast", function(data){
+          console.log("broadcast reply data ", data);
+          $('#repAdd').prepend("<p class='reply-section'>" + data.userName + ' : ' + data.comment + "</p>")
+        })
+
+
     </script>
+
+    
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"

@@ -9,3 +9,4 @@ Future Addition
 7. After Search, list is not clickable
 8. Edit is not working
 9. Delete button suddenly not working. need debug
+10. reply ID is already ID of someone who posted the posting

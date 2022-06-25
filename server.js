@@ -84,7 +84,7 @@ io.on("connection", function (socket) {
   // });
 
   socket.on("user-send", function (data) {
-    // console.log(data);
+    console.log("socket data ", data);
     io.emit("broadcast", data); //socket on in socket.ejs
     // io.to(socket.id).emit("broadcast", data); //socket on in socket.ejs. only chat to socket.id person
   });
@@ -199,7 +199,7 @@ app.delete("/delete", (req, res) => {
   });
 });
 
-app.get("/detail/:id", (req, res) => {
+app.get("/detail/:id", loginTrue, (req, res) => {
   db.collection("post").findOne(
     { _id: parseInt(req.params.id) },
     (err, result) => {
@@ -213,12 +213,22 @@ app.get("/detail/:id", (req, res) => {
         });
     }
   );
-  // res.writeHead(200, {
-  //   Connection: "keep-alive",
-  //   "Content-Type": "text/event-stream",
-  //   "Cache-Control": "no-cache",
-  // });
 });
+
+io.on("connection", function (socket) {
+  // console.log("connected to the socket-reply");
+  // console.log(socket.id);
+
+  socket.on("commentReply", function (data) {
+    console.log("reply passed data ", data);
+    io.emit("broadcast", data);
+  });
+});
+// res.writeHead(200, {
+//   Connection: "keep-alive",
+//   "Content-Type": "text/event-stream",
+//   "Cache-Control": "no-cache",
+// });
 
 app.get("/edit/:id", (req, res) => {
   db.collection("post").findOne(
@@ -390,6 +400,7 @@ app.get("/register/success", (req, res) => {
 //chatting - below login freature
 const { ObjectId } = require("mongodb");
 const { render } = require("ejs");
+const { runInNewContext } = require("vm");
 
 app.post("/chatroom", loginTrue, (req, res) => {
   var saving = {
@@ -466,11 +477,14 @@ app.get("/message/:id", loginTrue, function (req, res) {
   });
 });
 
-app.post("/commentpost", (req, res) => {
+app.post("/commentpost", loginTrue, (req, res) => {
+  console.log("reply post");
+
   let commentSave = {
     parent: req.body.parent,
     content: req.body.comment,
     userid: req.user._id,
+    userName: req.body.userName,
     date: new Date(),
   };
 
