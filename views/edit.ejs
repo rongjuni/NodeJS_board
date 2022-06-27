@@ -19,7 +19,9 @@
     <div class="mb-3">
       <!-- in order to use method ↓ "PUT" : npm install method-override -->
       <form action="/edit?_method=PUT" method="POST">
-        <label for="formGroupExampleInput" class="form-label">Todo</label>
+        <label for="formGroupExampleInput" class="form-label"
+          >Update Title</label
+        >
         <input
           type="text"
           value="<%= post._id %>"
@@ -27,16 +29,24 @@
           style="display: none"
         />
         <input
-          value="<%= post.title %>>"
+          type="text"
+          value="<%= post.userName %>"
+          name="userName"
+          style="display: none"
+        />
+        <input
+          value="<%= post.title %>"
           type="text"
           class="form-control"
           required
           name="title"
         />
         <div class="mb-3">
-          <label for="formGroupExampleInput2" class="form-label">Date</label>
+          <label for="formGroupExampleInput2" class="form-label"
+            >Update Content</label
+          >
           <input
-            value="<%= post.date %>>"
+            value="<%= post.content %>"
             type="text"
             class="form-control"
             required

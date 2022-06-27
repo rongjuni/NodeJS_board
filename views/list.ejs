@@ -13,44 +13,41 @@
       integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="/public/main.css" />
   </head>
   <body>
     <%- include('nav.html') %>
 
     <h4 class="ml-2 my-3 text-center">Share Your Gossip</h4>
 
-    <div class="container input-group mb-2">
-      <input class="form-control" id="search-input" />
-      <button id="searchButton" class="input-group-append btn btn-danger">
-        Search
-      </button>
-
-      <a href="/write" class="linkRemoval">
-        <button id="writeButton" class="input-group-append btn btn-secondary">
-          Write
+    <div class="width85vh">
+      <div class="container input-group mb-2">
+        <a href="/write" class="linkRemoval">
+          <button id="writeButton" class="input-group-append btn btn-danger">
+            Write New
+          </button>
+        </a>
+        <input class="form-control" id="search-input" />
+        <button id="searchButton" class="input-group-append btn btn-danger">
+          Search
         </button>
-      </a>
+      </div>
     </div>
 
     <div class="'container">
-      <ul class="list-group">
+      <ul class="list-group width85vh">
         <% for (let i=posts.length-1; i >= 0; i--){ %>
         <li class="list-group-item">
           <a href="/detail/<%= posts[i]._id %>" class="linkRemoval">
             <p class="listContent">Posting ID : <%= posts[i]._id %></p>
             <h4 class="listContent">Title : <%= posts[i].title %></h4>
-            <p class="listContent">Content : <%= posts[i].date %></p>
-            <p class="listContent">
-              Written By User "<%= posts[i].userName %>"
-            </p>
+            <p class="listContent">By "<%= posts[i].userName %>"</p>
+            <button
+              class="btn btn-outline-primary detail-button"
+              data-id="<%= posts[i]._id %>"
+            >
+              Detail
+            </button>
           </a>
-          <button class="btn btn-danger delete" data-id="<%= posts[i]._id %>">
-            Delete
-          </button>
-          <button class="btn btn-secondary chat" data-id="<%= posts[i].user %>">
-            Chat
-          </button>
         </li>
         <% } %>
       </ul>
@@ -77,28 +74,6 @@
     </script>
 
     <!-- JQuery import -->
-
-    <script>
-      $(".delete").click(function (e) {
-        let idNumber = e.target.dataset.id; //very important
-        let clickedButton = $(this);
-        console.log("delete click ", idNumber);
-        console.log("delete click typeof ", typeof idNumber);
-
-        $.ajax({
-          method: "DELETE",
-          url: "/delete",
-          data: { _id: idNumber },
-        })
-          .done(function (result) {
-            console.log("successfuly deleted");
-            clickedButton.parent("li").fadeOut();
-          })
-          .fail((xhr, textStatus, errorThrown) => {
-            console.log(xhr, textStatus, errorThrown);
-          });
-      });
-    </script>
 
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"

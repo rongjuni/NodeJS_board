@@ -12,7 +12,7 @@
       integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="/public/detail.css" />
+    <link rel="stylesheet" href="../public/detail.css" />
   </head>
   <body>
     <%- include('nav.html') %>
@@ -21,37 +21,48 @@
       <h4 class="text-center">Content Page</h4>
 
       <div class="card" style="width: 100%">
-        <div class="card-body"">
-          <h5 class="card-title"><%= data.title %></h5>
-          <h6 class="card-subtitle mb-2 text-muted"><%= data.date %></h6>
-          <p class="card-text">
-            Some quick example text to build on the card title and make up the
-            bulk of the card's content.
-          </p>
-          <a href="#" class="card-link">Edit</a>
+        <div class="card-body">
+          <h5 class="card-title">#<%= data._id %> <%= data.title %></h5>
+          <hr />
+          <p class="card-text"><%= data.content %></p>
+          <a href="/edit/<%= data._id %>" class="card-link"
+            ><button class="btn btn-success">Edit</button></a
+          >
+          <button class="btn btn-danger delete" data-id="<%= data._id %>">
+            Delete
+          </button>
         </div>
       </div>
 
       <div>
-        <p>comment section</p>
-        
-        <div>
-          <!-- <form action="/commentpost" method="POST"> -->
-          <input type="text" id="commentInput" name="comment" />
-          <p id='dataUserName' data-id="<%= data.userName %>"></p>
-          <p id='dataTitle' data-id="<%= data.title %>"></p>
-          <button id="commentSubmit" id="dataIdStore">submit</button>
-          <!-- </form> -->
+        <p class="comment-title">Comments</p>
+        <form id="commentSubmit">
+          <p id="dataUserName" data-id="<%= data.userName %>"></p>
+          <p id="dataTitle" data-id="<%= data.title %>"></p>
+
+          <div class="input-group mb-3">
+            <input
+              type="text"
+              id="commentInput"
+              class="form-control"
+              required
+            />
+            <div class="input-group-append">
+              <button class="btn btn-outline-secondary">Submit</button>
+            </div>
+          </form>
         </div>
 
+        <!-- reply section  -->
         <div>
           <ul id="repAdd">
-          <% for (let i=data2.length-1; i >= 0; i--){ %>
-            <li class="list-group-item">
-                <p class="listContent reply-section">
-                   <span class="reple-id"><%= data2[i].userName %> </span>
-                   <span><%= data2[i].content %></span>
-                  </p>
+            <% for (let i=data2.length-1; i >= 0; i--){ %>
+            <li class="list-group-item reply-section">
+              <p class="listContent">
+                <!-- <span class="reple-id"><%= data2[i].userName %> </span> -->
+                <span class="reple-comment-added">Anonymous :</span>
+                <span class="reple-comment-added"><%= data2[i].content %></span>
+              </p>
             </li>
             <% } %>
           </ul>
@@ -67,11 +78,14 @@
       // $('#container mt-4').click( function(){
       //   clickedContent = this.dataset.id
       // } )
-      $("#commentSubmit").click(function (e) {
+      $("#commentSubmit").submit(function (e) {
+        e.preventDefault();
         let comment = $("#commentInput").val();
-        let receiveResultData = "<%= JSON.stringify(data) %>"
-        receiveResultData = JSON.parse(receiveResultData.replaceAll('&#34;', '\"'))
-        
+        let receiveResultData = "<%= JSON.stringify(data) %>";
+        receiveResultData = JSON.parse(
+          receiveResultData.replaceAll("&#34;", '"')
+        );
+
         let withCommentData = {
           parent: receiveResultData._id,
           title: receiveResultData.title,
@@ -79,24 +93,50 @@
           userName: receiveResultData.userName,
           comment: comment,
         };
+
+        socket.emit("commentReply", withCommentData);
         
-        
-        socket.emit("commentReply", withCommentData)
         $.post("/commentpost", withCommentData).then(() => {
           console.log("comment sent!");
-          $("#commentInput").val(" ")
+          $("#commentInput").val("");
         });
       });
 
-        socket.on("broadcast", function(data){
-          console.log("broadcast reply data ", data);
-          $('#repAdd').prepend("<p class='reply-section'>" + data.userName + ' : ' + data.comment + "</p>")
-        })
-
-
+      socket.on("broadcast", function (data) {
+        console.log("broadcast reply data ", data);
+        $("#repAdd").prepend(
+          "<p class='reply-section'>" +
+            "Anonymous:" +
+            " : " +
+            data.comment +
+            "<span class='newly-added'> [New] </span>" +
+            "</p>"
+        );
+      });
     </script>
+    <script>
+      $(".delete").click(function (e) {
+        let idNumber = e.target.dataset.id; //very important
+        let clickedButton = $(this);
+        // console.log("id number ");
+        // console.log("delete click ", idNumber);
+        // console.log("delete click typeof ", typeof idNumber);
 
-    
+        $.ajax({
+          method: "DELETE",
+          url: "/delete",
+          data: { _id: idNumber },
+        })
+          .done(function (result) {
+            console.log("successfuly deleted");
+            // clickedButton.parent("li").fadeOut();
+            window.location.href = "/list";
+          })
+          .fail((xhr, textStatus, errorThrown) => {
+            console.log(xhr, textStatus, errorThrown);
+          });
+      });
+    </script>
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"

@@ -30,14 +30,18 @@
     <div class="'container">
       <ul class="list-group">
         <% for (let i=0; i < searched.length; i++){ %>
-        <li class="list-group-item">
-          <p>ID : <%= searched[i]._id %></p>
-          <h4>Todo title: <%= searched[i].title %></h4>
-          <p>Date: <%= searched[i].date %></p>
-        </li>
-        <% } %>
+        <a href="/detail/<%= searched[i]._id %>"
+          ><li class="list-group-item">
+            <p>ID : <%= searched[i]._id %></p>
+            <h4>Todo title: <%= searched[i].title %></h4>
+            <p>Date: <%= searched[i].date %></p>
+          </li>
+          <% } %>
+        </a>
       </ul>
     </div>
+
+    <!-- JQuery import -->
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 
@@ -47,28 +51,6 @@
         var inputSearch = $("#search-input").val();
         // replacing url = same as get request
         window.location.replace("/search?value=" + inputSearch);
-      });
-    </script>
-
-    <!-- JQuery import -->
-
-    <script>
-      $(".delete").click(function (e) {
-        let idNumber = e.target.dataset.id; //very important
-        let clickedButton = $(this);
-
-        $.ajax({
-          method: "DELETE",
-          url: "/delete",
-          data: { _id: idNumber },
-        })
-          .done(function (result) {
-            console.log("successfuly deleted");
-            clickedButton.parent("li").fadeOut();
-          })
-          .fail((xhr, textStatus, errorThrown) => {
-            console.log(xhr, textStatus, errorThrown);
-          });
       });
     </script>
 

@@ -1,6 +1,6 @@
 Future Addition
 
-1. Move delete button in detail
+done 1. Move delete button in detail
 2. Log out
 3. Remove underline (HTML)
 4. Add more menu in Navbar (login, etc)
@@ -10,3 +10,4 @@ Future Addition
 8. Edit is not working
 9. Delete button suddenly not working. need debug
 10. reply ID is already ID of someone who posted the posting
+11. comments without login still shows meanwhile not saved in DB

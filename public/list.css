@@ -9,10 +9,17 @@
 }
 
 
+body{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+
 .input-group-append{
     margin: 0 0 0 0.5rem ;
 }
 
+.detail-button{
+    margin-top: 1vh;
+}
 
 .listContent{
     margin: 0;
@@ -24,4 +31,15 @@
 
 .chat{
     margin-top: 0.5rem;
+}
+
+.list-group-item{
+    border-radius: 5px;
+    border: 5px black solid;
+    font: red;
+}
+
+.width85vh{
+    width: 85vw;
+    margin: auto;
 }

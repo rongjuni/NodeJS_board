@@ -21,13 +21,8 @@
       <h2 class="chattingPage" style="color: rgba(71, 68, 68, 0.829)">
         Live Chat
       </h2>
-      <h5
-        class="chattingPage"
-        style="
-          color: rgb(255, 0, 0);
-          background-color: rgba(255, 248, 146, 0.808);
-        "
-      >
+
+      <h5 class="chattingPage" style="color: rgba(255, 0, 0, 0.801)">
         Your message will be deleted once you leave this page
       </h5>
     </div>
@@ -62,19 +57,6 @@
     <!-- socket.io open -->
     <script>
       var socket = io();
-
-      // $("#room1-send").click(function () {
-      //   socket.emit("room1-send", "hello room number 1!!");
-      // });
-
-      // $("#room1").click(function () {
-      //   socket.emit("joinroom", "joining room1....");
-      // });
-
-      // function scrollToEnd() {
-      //   var chatList = document.getElementById("content");
-      //   chatList.scrollHeight = chatList.scrollHeight;
-      // }
 
       $("#send").click(function (e) {
         socket.emit("user-send", $("#input1").val());

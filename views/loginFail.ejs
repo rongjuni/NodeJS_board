@@ -3,7 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MyPage</title>
+    <title>Login || Not Logged In</title>
+    <link rel="stylesheet" href="/public/noLogin.css" />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -14,10 +15,21 @@
 
   <body>
     <%- include('nav.html') %>
-    <p>My Page</p>
-    <p>
-      Hi <%= userInfo.id %>. Nice to meet you. You are successfully logged in.
-    </p>
+
+    <div class="modal-body">
+      <h5>ID and Password Combination is not correct. Please try again</h5>
+      <br />
+
+      <a
+        href="/login"
+        role="button"
+        class="btn btn-secondary popover-test btn-secondary"
+        title="Popover title"
+        >Back to Log In</a
+      >
+
+      <hr />
+    </div>
 
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"

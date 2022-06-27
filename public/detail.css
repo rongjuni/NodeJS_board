@@ -1,4 +1,18 @@
-body {
-    
-    
+.newly-added{
+    color:red;
 }
+
+.comment-title{
+    margin-top: 2vh;
+    margin-bottom: 0;
+}
+
+#commentSubmit{
+    margin-top: 0;
+}
+
+.reple-comment-added{
+    color: rgb(71, 70, 70);
+    font-weight: bold;
+}
+

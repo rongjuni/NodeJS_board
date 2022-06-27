@@ -75,14 +75,6 @@ io.on("connection", function (socket) {
   console.log("connected to the socket");
   console.log(socket.id);
 
-  // socket.on("room1-send", function (data) {
-  //   io.to("room1").emit("broadcast", data);
-  // });
-
-  // socket.on("joinroom", function (data) {
-  //   socket.join("room1", "let me enter room1");
-  // });
-
   socket.on("user-send", function (data) {
     console.log("socket data ", data);
     io.emit("broadcast", data); //socket on in socket.ejs
@@ -95,7 +87,7 @@ app.get("/", (req, res) => {
   res.render("index.ejs");
 });
 
-app.get("/write", (req, res) => {
+app.get("/write", loginTrue, (req, res) => {
   res.render("write.ejs");
 });
 
@@ -134,7 +126,7 @@ app.get("/search", (req, res) => {
     // .find({ $text: { $search: req.query.value } })
     .toArray((error, result) => {
       console.log("search result ", result);
-      if (result == true) {
+      if (result) {
         res.render("search.ejs", { searched: result });
       } else res.render("searchNotFound.ejs");
     });
@@ -180,26 +172,7 @@ app.post("/add", loginTrue, (req, res) => {
   );
 });
 
-app.delete("/delete", (req, res) => {
-  console.log("req.body._id before ", req.body._id);
-  req.body._id = parseInt(req.body._id);
-  console.log("req.body._id after ", req.user._id);
-
-  // as add two paramter in object, delete one that satisfies both values
-  let dataToBeDeleted = { _id: req.body._id, userName: req.user.id };
-
-  // db.collection("post").deleteOne(req.body, (error, result) => {
-  db.collection("post").deleteOne(dataToBeDeleted, (error, result) => {
-    console.log("deleted");
-    if (result) {
-      console.log(result);
-    }
-    res.status(200).send({ message: "success" }); // assuming always success - code 200
-    // res.status(400).send({ message: "fail" }); // assuming always fail - code 400
-  });
-});
-
-app.get("/detail/:id", loginTrue, (req, res) => {
+app.get("/detail/:id", (req, res) => {
   db.collection("post").findOne(
     { _id: parseInt(req.params.id) },
     (err, result) => {
@@ -230,17 +203,27 @@ io.on("connection", function (socket) {
 //   "Cache-Control": "no-cache",
 // });
 
-app.get("/edit/:id", (req, res) => {
+app.get("/edit/:id", loginTrue, (req, res) => {
+  console.log("reqBody ", req.body);
+  console.log("reqUser ", req.user);
+  // if (req.body.userName === req.user.id) {
   db.collection("post").findOne(
     { _id: parseInt(req.params.id) },
     (err, result) => {
-      console.log(result);
-      res.render("edit.ejs", { post: result });
+      console.log("result ", result);
+      if (req.user.id === result.userName) {
+        res.render("edit.ejs", { post: result });
+      } else {
+        res.render("editDiffID.ejs");
+      }
     }
   );
+  // }
 });
 
 app.put("/edit", (req, res) => {
+  console.log(req.body);
+  console.log(req.user);
   db.collection("post").updateOne(
     { _id: parseInt(req.body.id) },
     { $set: { title: req.body.title, date: req.body.date } },
@@ -263,7 +246,7 @@ app.get("/signup", (req, res) => {
 // image upload and save
 // npm install multer
 let multer = require("multer");
-const { callbackify } = require("util");
+const { callbackify, isBuffer } = require("util");
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "./public/image");
@@ -299,12 +282,16 @@ app.get("/mypage", loginTrue, (req, res) => {
 
 function loginTrue(req, res, next) {
   if (req.user) {
-    //if logged in, req.user is alway there
+    //if logged in, req.user is always there
     next();
   } else {
     res.render("noLogin.ejs");
   }
 }
+
+app.get("/fail", (req, res) => {
+  res.render("loginFail.ejs");
+});
 
 // login check
 passport.use(
@@ -317,11 +304,11 @@ passport.use(
     },
     function (idEntered, pwEntered, done) {
       console.log(idEntered, pwEntered);
+      console.log(typeof idEntered);
       db.collection("login").findOne(
         { id: idEntered },
         function (error, result) {
-          if (error) return done(error);
-
+          if (error) return done("no login", error);
           if (!result)
             return done(null, false, { message: "Your ID does not exist" });
           if (pwEntered == result.pw) {
@@ -337,13 +324,16 @@ passport.use(
 
 //adding session in cookie
 passport.serializeUser(function (user, done) {
+  console.log("serializeUser ", user);
   done(null, user.id);
 });
 
 //finding data with user.id above
 passport.deserializeUser(function (id, done) {
   db.collection("login").findOne({ id: id }, (err, result) => {
+    // console.log("deserializeUser ", id);
     done(null, result);
+    // console.log("deserializeUser ", result);
   });
 });
 
@@ -491,4 +481,36 @@ app.post("/commentpost", loginTrue, (req, res) => {
   db.collection("message").insertOne(commentSave, (err, result) => {
     res.redirect("/list");
   });
+});
+
+app.post("/logout", (req, res, next) => {
+  req.logout(function (err) {
+    if (err) {
+      next(err);
+    }
+    res.send("/list");
+  });
+});
+
+app.delete("/delete", loginTrue, (req, res) => {
+  console.log("req.body._id before ", req.body._id);
+  req.body._id = parseInt(req.body._id);
+  console.log("req.body._id after ", req.user._id);
+
+  // as add two paramter in object, delete one that satisfies both values
+  let dataToBeDeleted = { _id: req.body._id, userName: req.user.id };
+
+  if (!req.user) {
+    res.send("please login first");
+  } else if (req.user) {
+    // db.collection("post").deleteOne(req.body, (error, result) => {
+    db.collection("post").deleteOne(dataToBeDeleted, (error, result) => {
+      console.log("deleted");
+      if (result) {
+        console.log(result);
+      }
+      res.status(200).send({ message: "success" }); // assuming always success - code 200
+      // res.status(400).send({ message: "fail" }); // assuming always fail - code 400
+    });
+  }
 });
