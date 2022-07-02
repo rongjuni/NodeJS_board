@@ -172,7 +172,7 @@ app.post("/add", loginTrue, (req, res) => {
   );
 });
 
-app.get("/detail/:id", (req, res) => {
+app.get("/detail/:id", loginTrue, (req, res) => {
   db.collection("post").findOne(
     { _id: parseInt(req.params.id) },
     (err, result) => {
@@ -197,11 +197,6 @@ io.on("connection", function (socket) {
     io.emit("broadcast", data);
   });
 });
-// res.writeHead(200, {
-//   Connection: "keep-alive",
-//   "Content-Type": "text/event-stream",
-//   "Cache-Control": "no-cache",
-// });
 
 app.get("/edit/:id", loginTrue, (req, res) => {
   console.log("reqBody ", req.body);
@@ -222,11 +217,13 @@ app.get("/edit/:id", loginTrue, (req, res) => {
 });
 
 app.put("/edit", (req, res) => {
-  console.log(req.body);
-  console.log(req.user);
+  console.log("edit page req.body ", req.body.id);
+  console.log("edit page req.body ", req.body.content);
+  console.log("edit page req.body ", typeof req.body.id);
+  console.log("edit req.user ", req.user);
   db.collection("post").updateOne(
     { _id: parseInt(req.body.id) },
-    { $set: { title: req.body.title, date: req.body.date } },
+    { $set: { title: req.body.title, content: req.body.content } },
     (err, result) => {
       console.log("updated successfully");
       res.redirect("/list");

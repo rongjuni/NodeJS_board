@@ -56,10 +56,19 @@
 
     <!-- socket.io open -->
     <script>
+      let userName = "<%= JSON.stringify(userIdData) %>";
+      userName = JSON.parse(userName.replaceAll("&#34;", '"'));
+
       var socket = io();
 
       $("#send").click(function (e) {
-        socket.emit("user-send", $("#input1").val());
+        let inputValue = $("#input1").val();
+        dataIdandText = {
+          userName: userName,
+          inputValue: inputValue,
+        };
+
+        socket.emit("user-send", dataIdandText);
         e.preventDefault();
         $("#input1").val(" ");
         // var chatList = document.getElementById("content");
@@ -74,7 +83,10 @@
 
       socket.on("broadcast", function (data) {
         console.log("broadcast data", data);
-        $("#content").append("<div> <%= userIdData %> : " + data + "</div>");
+        $("#content").append(
+          // "<div> <%= userIdData %> : " +
+          "<div>" + data.userName + " : " + data.inputValue + "</div>"
+        );
       });
     </script>
     <!-- end socket.io open -->
