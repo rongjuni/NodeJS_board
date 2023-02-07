@@ -3,8 +3,8 @@
   "name": "damoya",
   "builds": [
     {
-      "src": "package.json", 
-      "use": "vercel-sapper"
+      "src": "server.js",
+      "use": "@now/node"
     }
   ],
   "routes": [
