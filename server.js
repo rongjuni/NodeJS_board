@@ -511,3 +511,5 @@ app.delete("/delete", loginTrue, (req, res) => {
     });
   }
 });
+
+module.exports = app;
