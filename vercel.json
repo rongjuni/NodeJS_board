@@ -1,15 +1,16 @@
 {
   "version": 2,
+  "name": "damoya",
   "builds": [
     {
-      "src": "index.js",
-      "use": "@now/node"
+      "src": "package.json", 
+      "use": "vercel-sapper"
     }
   ],
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "index.js"
+      "dest": "server.js"
     }
   ]
 }
